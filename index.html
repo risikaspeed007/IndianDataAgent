@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>India Data Agent</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: min(800px, 92%);
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            margin-bottom: 8px;
+            color: #172554;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .answer {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .loading {
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🇮🇳 India Data Agent</h1>
+
+    <div class="subtitle">
+        Ask questions about India's gross enrolment dataset.
+    </div>
+
+    <input
+        id="question"
+        type="text"
+        placeholder="Example: How much did Bihar improve?"
+    >
+
+    <button onclick="askAgent()">
+        Ask India Data Agent
+    </button>
+
+    <div id="answer" class="answer">
+        Your answer will appear here.
+    </div>
+
+</div>
+
+<script>
+
+async function askAgent() {
+
+    const question = document.getElementById("question").value;
+    const answer = document.getElementById("answer");
+
+    if (!question.trim()) {
+        answer.innerText = "Please enter a question.";
+        return;
+    }
+
+    answer.innerHTML = '<span class="loading">Analyzing...</span>';
+
+    try {
+
+        const response = await fetch("/api/index", {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                question: question
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.answer) {
+            answer.innerText = data.answer;
+        } else if (data.message) {
+            answer.innerText = data.message;
+        } else {
+            answer.innerText = JSON.stringify(data, null, 2);
+        }
+
+    } catch (error) {
+
+        answer.innerText =
+            "Unable to connect to the India Data Agent.";
+
+        console.error(error);
+    }
+}
+
+</script>
+
+</body>
+</html>
